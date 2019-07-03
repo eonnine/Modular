@@ -16,7 +16,6 @@ var ViewModule = function () {
 
 ViewModule.prototype.extendToModuleForView = function (module) {
 	module.renderIds = [];
-	module.messageStorage = {};
 	
 	module.initRender = function (renderFunction) {
 		this.exports.render = this.exports.render.bind(this, renderFunction);
@@ -24,7 +23,6 @@ ViewModule.prototype.extendToModuleForView = function (module) {
 	
 	this.extendToExportsForView.call(module, module.exports);
 	
-	Util.defineProperty(module, 'messageStorage');
 	Util.defineProperty(module, 'message');
 };
 

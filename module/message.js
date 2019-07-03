@@ -3,16 +3,11 @@
 var Message = function () {
 	this._storage_ = {};
 	this._self_	 = {};
-	this._constructor = {};
 	
 	this._self_.on = function (name, messageListener) {
 		this._storage_[name] = messageListener;
 		return this._self_;
 	}.bind(this);
-	
-	this._self_.constructor = function (fun) {
-		
-	}
 	
 };
 
