@@ -115,52 +115,7 @@ options.cache = false 일 때 해당 모듈은 로딩시 캐싱하지 않습니�
 각 url의 확장자를 제외한 마지막 부분이 모듈명이 됩니다. 
 ```  
   
-#
-> ### *Load: Sync*
-| module, exports |
-| :-------------- |
-```text
-모듈 내보내기 객체.
-동기 방식으로 모듈을 로드할 때 접근가능한 객체입니다.
 
-module.exports = {
-  name: 'Anna',
-  age: 20
-};
-
-혹은
-
-exports.name = 'Anna';
-exports.age = 20;
-...
-
-위와 같은 방법으로 내보내기할 수 있습니다.
-```  
-  
-| require: *Function(path: String!)* |
-| :-- |
-```text
-해당 경로에 맞는 Js파일을 로드합니다.
-로드한 모듈에서 exports된 데이터를 반환합니다.
-```  
-  
-
-| request: *Function(url: String!, moduleName: String)* |
-| :-- |
-```text
-url로 요청을 보낸 뒤 응답받은 페이지의 스크립트 노드들을 로드합니다.
-로드한 모듈에서 exports된 데이터를 반환합니다.
-
-두 번째인자를 이용하여 특정 모듈만 로드할 수 있습니다. 생략 가능
-```  
-  
-
-| requestView: *Function(url: String!)* |
-| :-- |
-```text
-url로 요청을 보낸 뒤 응답받은 페이지를 View 객체로 변환합니다.
-```  
-  
 #
 * ## *Example*
 
@@ -192,19 +147,19 @@ imports({
 This is Sample Page
 <body>
 
-<script module-name="firstModule">
+<script modular-name="firstModule">
   define(function() {
     return 'first sample';
   });
 </script>
 
-<script module-name="secondModule" module-ignore="false">
+<script modular-name="secondModule" modular-ignore="false">
   define({}, {}, function() {
     return 'second sample';
   });
 </script>
 
-<script module-name="ignoreModule" module-ignore="true">
+<script modular-name="ignoreModule" modular-ignore="true">
   define({}, function() {
     return 'not loaded module';
   });
@@ -222,23 +177,40 @@ imports({
   
 * #### View
 ```html
-<!-- view.html -->  
-<html>
-<body>
-This is View Page
-<body>
+<!-- view.jsp -->
 
-<script module-name="renderScript">
+<!-- modulear-module-element -->
+<div modular-module id="view-$self">This is View Page</div>
+
+<script modular-render="constructor">
+renderConstructor(function (setState){
+  console.log('run constructor');
+  
+  //load to asynchronous
+  setTimeout(function () {
+    setState({
+      id: 'sample',
+      text: 'hello!'
+    });
+  });
+});  
+</script>  
+<script modular-name="viewComponent">
   alert('run script');
+  
   message.on('init' ,function(message) {
+    console.log(this); //{ $self: '[modular-module-element]', state: { id: 'sample', text; 'hello!' } };
     console.log('complete render => ', message);
+  });
+  
+  message.on('destroy' ,function() {
+    console.log('destroy view!');
   });
 </script>
 
-<script module-name="ignoreModule" module-ignore="true">
+<script modular-name="ignoreModule" modular-ignore="true">
   alert('not run script');
 </script>
-</html>
 ```
 ```html
 <html>
@@ -248,6 +220,7 @@ This is View Page
 </body>
 <script>
 imports({
+  // console: 'run constructor'
   requestView: ['/view.do']
 }, function (_requestView) {  
   console.log(_requestView); // { view: { reunder: f(), postMessage: f(), destroy: f() } }
@@ -255,14 +228,15 @@ imports({
   var view = _requestView.view;
   
   view
-  //'view.html' be inserted in elements ('renderArea','renderAreaSecond')
-  //alert: 'run script'
+  // 'view.jsp' be inserted in elements ('renderArea','renderAreaSecond')
+  // alert: 'run script'
   .render('renderArea,renderAreaSecond') 
-  //run messageListener
-  //console: 'complete render => helloView'
+  // run messageListener
+  // console: 'complete render => hello View'
   .postMessage('init', 'hello View'); 
   
-  //'view.html' be deleted in element ('renderArea')
+  // 'view.html' be deleted in element ('renderArea')
+  // console: 'destroy view!'
   view.destroy('renderArea');
   
 });
@@ -270,36 +244,6 @@ imports({
 </html>
 ```  
   
-#
-> ### *Load: Sync*
-* #### Js, Script Node, View
-```javascript
-//hello.js
-module.exports = 'Hello Modular'  
-  
-  
-//sample.html
-<script module-name="firstModule">
-  module.exports = 'first sample';
-</script>  
-  
-<script module-name="secondModule" module-ignore="false">
-  module.exports = 'second sample';
-</script>  
-  
-<script module-name="ignoreModule" module-ignore="true">
-  exports.name = 'eonnine';
-  exports.age = 29;
-  exports.gender = male;
-</script>  
-```
-
-```javascript
-var hello = require('hello.js'); //'Hello Modular'
-var sample = request('/sample.do'); //{ firstModule: 'first sample', secondModule: 'second sample' }
-var secondModule = request('/sample.do', 'secondModule'); //'second sample'
-var view = requestView('/view.do'); //{ reunder: f(), postMessage: f(), destroy: f() }
-```
   
 * ## *support browser*  
 | chrome | firefox | sapari | opera | ie edge | ie 10++ |
@@ -332,11 +276,12 @@ var view = requestView('/view.do'); //{ reunder: f(), postMessage: f(), destroy:
 > *2019-06-19*
 - 비동기 로드 방식 개선
 - default 모듈 옵션 추가  
-  
 ***
+> *2019-07-08*
+- 동기 방식 로더 삭제 (브라우저 환경에서 사용할 일이 없어서)
+- view module(requestView 객체)의 constructor, destroy listener 추가
+- alias 옵션 추가
+***
+
 > *이후 작업 예정*
-- 라이브러리 의존성 설정 (shim, 플러그인 등) 기능 추가  
-
-
-
-
+- 라이브러리 의존성 설정 (shim) 기능 추가  
