@@ -16,6 +16,10 @@ Queue.prototype.peek = function () {
 	return this._self_.shift();
 };
 
+Queue.prototype.length = function () {
+	return this._self_.length;
+};
+
 Queue.prototype.isEmpty = function () {
 	return ( this._self_.length === 0 );
 };

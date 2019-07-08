@@ -3,12 +3,13 @@
 var Message = require('./message');
 var Util = require('../util/Util');
 
-var Module = function (_isView) {
+var Module = function (id) {
 	
 	this._create_ = function () {
 		var module = this.createModule();
-		module.message = new Message();
+		module.message = new Message(id);
 		module.cache = true;
+		module.id = id;
 		Util.defineProperty(module, 'exports');
 		Util.defineProperty(module, 'cache', { configurable: false, enumerable: false, writable : true });
 		return module;

@@ -1,5 +1,3 @@
-//모듈 네임기능
-//shim 기능 추가
 (function (module) {
 	for(var key in module) this[key] = module[key];
 }((function () {
@@ -25,21 +23,6 @@
 
 	Loader.init(_config_);
 	
-	_modular_[Word.REQUIRE_JS] = function (path) {
-  	return Loader.syncLoadModuleJs(Util.getNameFromPath(path), _config_.getResourceUrl(path), _config_.getLibData(path));
-  },
-	
-	_modular_[Word.REQUIRE_PAGE] = function (path, moduleNames) {
-  	var isLoadModuleTagByName = ( moduleNames === undefined ) ? true : false;
-  	return ( isLoadModuleTagByName ) 
-  		       ? Loader.syncLoadModuleNode(Util.getNameFromPath(path), _config_.getRequestUrl(path), _config_.getLibData(path)) 
-  		       : Loader.syncLoadModuleNodeByName(Util.getNameFromPath(path), _config_.getRequestUrl(path), _config_.getLibData(path), moduleNames);
-	};
-	  
-	_modular_[Word.REQUIRE_VIEW] = function (path) {
-	  return Loader.syncLoadModuleView(Util.getNameFromPath(path), _config_.getRequestUrl(path), _config_.getLibData(path));
-	};
-	  
   _modular_[Word.REQUIRE_IMPORT] = function (imports, fun) {
   	_queue_.offer(function () {
 	  	setTimeout(function () {

@@ -63,11 +63,21 @@ var Util = {
 		if(index != 0){
 			str = str.substring(index, str.length);
 		}
+		
+		index = str.lastIndexOf('/');
+		if(index != -1){
+			str = str.substring(index+1, str.length);
+		}
+		
 		index = str.lastIndexOf('.');
 		if(index != -1){
 			str = str.substring(0, index);
 		}
 		return str;
+	},
+	
+	trim: function (str) {
+		return str.replace(/\s\S/g, '');
 	},
 	
 	isEs6Browser: (function () {

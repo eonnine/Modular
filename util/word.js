@@ -11,12 +11,17 @@ var WordMap = {
 	MESSAGE: 'message',
 	DEFINE: 'define',
 	MODULAR_CONFIGURE: 'modular',
-	MODULE_NAME: 'module-name',
-	MODULE_IGNORE: 'module-ignore',
+	MODULE_NAME: 'modular-name',
+	MODULE_IGNORE: 'modular-ignore',
+	MODULE_ELEMENT: 'modular-module',
+	MODULE_RENDER: 'modular-render',
+	RENDER_CONSTRUCTOR: 'renderConstructor',
 	ES6_TYPE: 'text/babel',
 	ES6_PRESET: 'es2015',
-	CACHE_VIEW_SUFFIX: '-view',
 	CACHE_SYNC_PREFIX: 'cache-sync-',
+	CACHE_VIEW_SUFFIX: '-view',
+	CACHE_VIEW_RENDER_FUN_SUFFIX: '-view-render-fun',
+	CACHE_VIEW_RENDER_ORIGIN_ELEMENT_SUFFIX: '-view-render-origin-element',
 }
 
 module.exports = WordMap;

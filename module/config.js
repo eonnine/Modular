@@ -22,6 +22,7 @@ var Config = function (option) {
 			isRemovePatten: true
 		},
 		lib: {},
+		alias: {},
 		shim: {},
 		defaultDeps: {
 			require: [],
@@ -51,6 +52,11 @@ Config.prototype.set = function (props) {
 	var lib = this._self_.lib;
 	Util.eachObj(props.lib, function (k, v) {
 		lib[k] = v;
+	});
+	
+	var alias = this._self_.alias;
+	Util.eachObj(props.alias, function (k, v) {
+		alias[k] = v;
 	});
 	
 	var shim = this._self_.shim;
@@ -93,6 +99,18 @@ Config.prototype.getLibData = function (path) {
 		isGlobal: ( lib.self ) ? true : false,
 	};
 };
+
+Config.prototype.getAliasData = function (path) {
+  var alias = this._self_.alias[path];
+	if(alias === undefined){
+		return undefined;
+	}
+	return {
+		propPath: alias.path||path,
+		requestPath: this.concat(this._self_.alias[path].path, this._self_.request.path),
+	  path: this.concat(this._self_.alias[path].path, this._self_.resource.path),
+	};
+}
 
 Config.prototype.makePath = function (path, r) {
 	
