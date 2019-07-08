@@ -78,7 +78,7 @@ ViewModule.prototype.extendToExportsForView = function (exports) {
 			},
 		};
 		
-		if(_this.isCompleteConstructor === true){
+		if(_this.isCompleteConstructor === true && _this.postQueue.length() === 0){
 			_this.moduleScope.$self = [];
 			beginRender(renderFunction, renderParam);
 		}else{
@@ -105,26 +105,15 @@ ViewModule.prototype.extendToExportsForView = function (exports) {
 	};
 	
 	exports.destroy = function (idsString) {
-		var originRenderElementName = _this.id + Word.CACHE_VIEW_RENDER_ORIGIN_ELEMENT_SUFFIX;
-		var renderIds = _this.renderIds;
-		var idsArray = idsString == undefined ? undefined : idsString.split(',');
-		
-		this.postMessage('destroy');
-		
-		Util.eachRvs(renderIds, function (i, el) {
-			if(idsString === undefined || idsArray.indexOf(el) != -1 ){
-				var parent = document.getElementById(el);
-				if( _this.viewCache.hasChild(originRenderElementName, el) ){
-					parent.innerHTML = _this.viewCache.get(originRenderElementName, el);
-				} else {
-					while (parent.firstChild) {
-						parent.removeChild(parent.firstChild);
-					}
-				} 
-				
-				renderIds.splice(i, 1);
-			}
-		});
+		if(_this.isCompleteConstructor === true && _this.postQueue.length() === 0){
+			_this.exports.postMessage('destroy');
+			beginDestroy(idsString, _this.id, _this.renderIds, _this.viewCache);
+		}else{
+			_this.postQueue.offer(function () {
+				_this.exports.postMessage('destroy');
+				beginDestroy(idsString, _this.id, _this.renderIds, _this.viewCache);
+			});
+		}
 		return _this.exports;
 	};
 };
@@ -143,6 +132,27 @@ function beginRender (renderFunction, renderParam) {
 		});
 		isRunScript = false;
 		renderParam.addRenderIds(el);
+	});
+}
+
+function beginDestroy (idsString, id, renderIds, viewCache) {
+	var originRenderElementName = id + Word.CACHE_VIEW_RENDER_ORIGIN_ELEMENT_SUFFIX;
+	var renderIds = renderIds;
+	var idsArray = idsString == undefined ? undefined : idsString.split(',');
+	
+	Util.eachRvs(renderIds, function (i, el) {
+		if(idsString === undefined || idsArray.indexOf(el) != -1 ){
+			var parent = document.getElementById(el);
+			if( viewCache.hasChild(originRenderElementName, el) ){
+				parent.innerHTML = viewCache.get(originRenderElementName, el);
+			} else {
+				while (parent.firstChild) {
+					parent.removeChild(parent.firstChild);
+				}
+			} 
+			
+			renderIds.splice(i, 1);
+		}
 	});
 }
 
