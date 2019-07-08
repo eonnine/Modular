@@ -281,6 +281,7 @@ imports({
 - 동기 방식 로더 삭제 (브라우저 환경에서 사용할 일이 없어서)
 - view module(requestView 객체)의 constructor, destroy listener 추가
 - alias 옵션 추가
+- 메모리 최적화 및 메모리 누수 제거
 ***
 
 > *이후 작업 예정*
