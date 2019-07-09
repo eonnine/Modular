@@ -100,7 +100,7 @@ Loader.prototype.loadModuleNode = function(importParam, callback) {
 
 	importParam.isGlobal = false;
 	this.loadModuleAsString(importParam.url, function(moduleStr, scriptData) {
-		Util.eachObj(scriptData.modules, function(k, v, o) {
+		Util.eachObj(scriptData.scripts, function(k, v, o) {
 			promise.add(k, function(complete) {
 				_this.makeModuleFunction(_this.transpile(v))(new Module(), {});
 				_this.loadModule(importParam, complete, k, function(defineModule) {
@@ -269,14 +269,11 @@ Loader.prototype.createNode = function(importParam) {
 };
 
 Loader.prototype.loadModuleAsString = function(url, fun) {
-	Ajax
-			.getAsync(
-					url,
-					function(loadedModuleString) {
-						loadedModuleString = Util.removeAnnotation(loadedModuleString);
-						var scriptData = this.getScriptFromString(loadedModuleString);
-						fun(loadedModuleString, scriptData);
-					}.bind(this));
+	Ajax.getAsync(url, function(loadedModuleString) {
+		loadedModuleString = Util.removeAnnotation(loadedModuleString);
+		var scriptData = this.parseStringToScript(loadedModuleString);
+		fun(loadedModuleString, scriptData);
+	}.bind(this));
 };
 
 Loader.prototype.makeModuleFunction = function(str) {
@@ -330,41 +327,35 @@ Loader.prototype.makeRender = function() {
 	}
 };
 
-Loader.prototype.getScriptFromString = function(loadedModuleString) {
-	var startIndex = 0, endIndex = 0, renderScript = {}, scriptStrModules = {}, scriptNodeObject = {}, scriptStrObject = {}, moduleName, scriptNode, script;
-
-	if (loadedModuleString !== undefined
-			&& typeof loadedModuleString === 'string') {
-		while (loadedModuleString.indexOf('<script') != -1) {
-			startIndex = loadedModuleString.indexOf('<script');
-			endIndex = loadedModuleString.indexOf('</script');
-
-			script = loadedModuleString.substring(startIndex, endIndex) + '</script>';
-
-			loadedModuleString = loadedModuleString.substring(
-					endIndex + 9/* '</script>'.length */, loadedModuleString.length);
-
+Loader.prototype.parseStringToScript = function(loadedModuleString) {
+	var scriptNodeObject = {}, scriptStrObject = {}, renderScript = {};
+	var moduleName, scriptArray, scriptNode;
+	var _this = this;
+	
+	if (loadedModuleString !== undefined 	&& typeof loadedModuleString === 'string') {
+		scriptArray = loadedModuleString.match(Util.regExp.scriptAreas);
+		
+		Util.each(scriptArray, function (i, script) {
 			try {
 				scriptNode = Util.DOMParser.parseFromString(script, "application/xml").getElementsByTagName('script');
 			} catch (e) {
 				Util.error('syntax error:' + script);
 			}
 
-			if (scriptNode.length === 0) {
-				break;
+			if (scriptNode === undefined || scriptNode.length === 0) {
+				return;
 			}
-
-			script = script.substring(script.indexOf('>') + 1, script.indexOf('</script>'));
-
+			
+			script = script.replace(Util.regExp.scriptTags, '');
 			scriptNode = scriptNode[0];
-
-			if (this.isRenderConstructor(scriptNode)) {
+			
+			if (_this.isRenderConstructor(scriptNode)) {
 				scriptNode.setAttribute(Word.MODULE_IGNORE, 'true');
 				renderScript.constructor = script;
 			}
 
-			if (this.isIgnoreScript(scriptNode)) {
-				continue;
+			if (_this.isIgnoreScript(scriptNode)) {
+				return;
 			}
 
 			moduleName = scriptNode.getAttribute(Word.MODULE_NAME);
@@ -374,14 +365,11 @@ Loader.prototype.getScriptFromString = function(loadedModuleString) {
 			}
 
 			scriptNodeObject[moduleName] = scriptNode;
-			scriptStrModules[moduleName] = script;
 			scriptStrObject[moduleName] = script;
-
-		}
+		});
 	}
-
+	
 	return {
-		modules : scriptStrModules,
 		nodes : scriptNodeObject,
 		scripts : scriptStrObject,
 		renderScript : renderScript
@@ -490,8 +478,7 @@ Loader.prototype.importModuleNode = function(importParam) {
 	importParam.importPromise.add(moduleName, function(complete) {
 
 		if (_this._cache_.has(moduleName)) {
-			importParam.setModuleDataFun(Word.REQUIRE_JS, _this._cache_
-					.get(moduleName));
+			importParam.setModuleDataFun(Word.REQUIRE_JS, _this._cache_.get(moduleName));
 			complete();
 			return false;
 		}

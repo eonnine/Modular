@@ -5,7 +5,13 @@ var Word = require('./word');
 var Util = {
   
 	DOMParser: new DOMParser(),
-		
+	
+	regExp : {
+		scriptAreas: /<script(\s)(modular-name|modular-render)(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
+		scriptTags: /<script(\s|\S)*?\>|\<\/script(\s|\S)*?\>/g,
+		annotaion: /(\/\*(\s|\S)*?\*\/)|<!-{2,}(\s|\S)*?-{2,}>|^\/\/.*|(\/\/.*)/g,
+	},
+	
 	assign: function  (target, obj) {
 		for(var k in obj){
 			target[k] = obj[k];
@@ -14,8 +20,8 @@ var Util = {
 	
   each: function (ary, func) {
     if (ary) {
-      var i;
-      for (i = 0; i < ary.length; i++) {
+      var i, len;
+      for (i=0, len=ary.length; i < len; i++) {
         if (ary[i] && func(i, ary[i]) === false){
         	return false;
         }
@@ -27,7 +33,7 @@ var Util = {
   eachRvs: function (ary, func) {
     if (ary) {
       var i;
-      for (i = ary.length-1; i >= 0; i--) {
+      for (i=ary.length-1; i >= 0; i--) {
         if (ary[i] && func(i, ary[i]) === false){
         	return false;
         }
@@ -90,7 +96,7 @@ var Util = {
 	}()),
 	
 	removeAnnotation: function (str) {
-		return str.replace(/(\/\*(\s|\S)*?\*\/)|<!-{2,}(\s|\S)*?-{2,}>|^\/\/.*/g, '');
+		return str.replace(this.regExp.annotaion, '');
 	},
 	
 	warn: function (msg) {
