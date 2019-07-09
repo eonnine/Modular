@@ -531,18 +531,20 @@ Loader.prototype.makeRender = function() {
 };
 
 Loader.prototype.parseStringToScript = function(loadedModuleString) {
-	var scriptNodeObject = {}, scriptStrObject = {}, renderScript = {};
-	var moduleName, scriptArray, scriptNode;
+	var scriptStrObject = {}, renderScript = {};
+	var moduleName, scriptArray, scriptTagStrArray, scriptNode;
 	var _this = this;
 	
 	if (loadedModuleString !== undefined 	&& typeof loadedModuleString === 'string') {
 		scriptArray = loadedModuleString.match(Util.regExp.scriptAreas);
 		
 		Util.each(scriptArray, function (i, script) {
+		
 			try {
-				scriptNode = Util.DOMParser.parseFromString(script, "application/xml").getElementsByTagName('script');
+				scriptTagStrArray = script.match(Util.regExp.scriptTags);
+				scriptNode = Util.parseDOMFromString( scriptTagStrArray[0].concat(scriptTagStrArray[1]) , 'script');
 			} catch (e) {
-				Util.error('syntax error:' + script);
+				 Util.error(e.message + ': \n' + script);
 			}
 
 			if (scriptNode === undefined || scriptNode.length === 0) {
@@ -550,6 +552,7 @@ Loader.prototype.parseStringToScript = function(loadedModuleString) {
 			}
 			
 			script = script.replace(Util.regExp.scriptTags, '');
+			
 			scriptNode = scriptNode[0];
 			
 			if (_this.isRenderConstructor(scriptNode)) {
@@ -567,13 +570,11 @@ Loader.prototype.parseStringToScript = function(loadedModuleString) {
 				Util.error('"' + Word.MODULE_NAME + '" property is required: \n' + script);
 			}
 
-			scriptNodeObject[moduleName] = scriptNode;
 			scriptStrObject[moduleName] = script;
 		});
 	}
 	
 	return {
-		nodes : scriptNodeObject,
 		scripts : scriptStrObject,
 		renderScript : renderScript
 	};
@@ -1038,6 +1039,10 @@ var Util = {
 	  }
 	  return true;
 	}()),
+	
+	parseDOMFromString: function (str, tagName) {
+		return this.DOMParser.parseFromString(str, "application/xml").getElementsByTagName(tagName);
+	}, 
 	
 	removeAnnotation: function (str) {
 		return str.replace(this.regExp.annotaion, '');

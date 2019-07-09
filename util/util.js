@@ -95,6 +95,10 @@ var Util = {
 	  return true;
 	}()),
 	
+	parseDOMFromString: function (str, tagName) {
+		return this.DOMParser.parseFromString(str, "application/xml").getElementsByTagName(tagName);
+	}, 
+	
 	removeAnnotation: function (str) {
 		return str.replace(this.regExp.annotaion, '');
 	},
