@@ -1033,7 +1033,7 @@ var Util = {
 	
 	isEs6Browser: (function () {
 	  try {
-	      eval('function foo(bar, ...rest) { return 1; };');
+	      eval('const browserTest = (...args) => { return 1; };');
 	  } catch (error) {
 	      return false;
 	  }
