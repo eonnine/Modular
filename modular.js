@@ -186,7 +186,7 @@ Config.prototype.isExcludePattern = function (path, excludePattern) {
 	var isExclude = false;
 	
 	if(excludePattern === '/') return isExclude = true;
-	if(excludePattern !== undefined){
+	if(excludePattern !== undefined && excludePattern.replace(/\s\S/g, '') !== ''){
 		var excludeArray = excludePattern.split(',').map(function(el){
 	     return el.replace(/\s/gi, '');
 		 });
