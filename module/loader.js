@@ -272,6 +272,7 @@ Loader.prototype.loadModuleAsString = function(url, fun) {
 	Ajax.getAsync(url, function(loadedModuleString) {
 		loadedModuleString = Util.removeAnnotation(loadedModuleString);
 		var scriptData = this.parseStringToScript(loadedModuleString);
+		loadedModuleString = loadedModuleString.replace(Util.regExp.allScriptAreas, '');
 		fun(loadedModuleString, scriptData);
 	}.bind(this));
 };
@@ -333,7 +334,7 @@ Loader.prototype.parseStringToScript = function(loadedModuleString) {
 	var _this = this;
 	
 	if (loadedModuleString !== undefined 	&& typeof loadedModuleString === 'string') {
-		scriptArray = loadedModuleString.match(Util.regExp.scriptAreas);
+		scriptArray = loadedModuleString.match(Util.regExp.moduleScriptAreas);
 		
 		Util.each(scriptArray, function (i, script) {
 		

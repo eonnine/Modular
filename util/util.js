@@ -7,7 +7,8 @@ var Util = {
 	DOMParser: new DOMParser(),
 	
 	regExp : {
-		scriptAreas: /<script(\s)(modular-name|modular-render)(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
+		allScriptAreas: /<script(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
+		moduleScriptAreas: /<script(\s)(modular-name|modular-render)(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
 		scriptTags: /<script(\s|\S)*?\>|\<\/script(\s|\S)*?\>/g,
 		annotaion: /(\/\*(\s|\S)*?\*\/)|<!-{2,}(\s|\S)*?-{2,}>|^\/\/.*|(\/\/.*)/g,
 	},

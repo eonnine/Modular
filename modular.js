@@ -475,6 +475,7 @@ Loader.prototype.loadModuleAsString = function(url, fun) {
 	Ajax.getAsync(url, function(loadedModuleString) {
 		loadedModuleString = Util.removeAnnotation(loadedModuleString);
 		var scriptData = this.parseStringToScript(loadedModuleString);
+		loadedModuleString = loadedModuleString.replace(Util.regExp.allScriptAreas, '');
 		fun(loadedModuleString, scriptData);
 	}.bind(this));
 };
@@ -536,7 +537,7 @@ Loader.prototype.parseStringToScript = function(loadedModuleString) {
 	var _this = this;
 	
 	if (loadedModuleString !== undefined 	&& typeof loadedModuleString === 'string') {
-		scriptArray = loadedModuleString.match(Util.regExp.scriptAreas);
+		scriptArray = loadedModuleString.match(Util.regExp.moduleScriptAreas);
 		
 		Util.each(scriptArray, function (i, script) {
 		
@@ -952,7 +953,8 @@ var Util = {
 	DOMParser: new DOMParser(),
 	
 	regExp : {
-		scriptAreas: /<script(\s)(modular-name|modular-render)(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
+		allScriptAreas: /<script(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
+		moduleScriptAreas: /<script(\s)(modular-name|modular-render)(\s|\S)*?(\s|\S)*?<\/script(\s|\S)*?>/g,
 		scriptTags: /<script(\s|\S)*?\>|\<\/script(\s|\S)*?\>/g,
 		annotaion: /(\/\*(\s|\S)*?\*\/)|<!-{2,}(\s|\S)*?-{2,}>|^\/\/.*|(\/\/.*)/g,
 	},
