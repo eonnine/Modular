@@ -1,20 +1,20 @@
 # Modular 
   
 #  
-* ## *outline*
+## outline
   * #### 모듈화 도구
   * commonJs, requireJs와 같은 기능을 가진 라이브러리를 직접 구현해보고자 개발
   
 #
-* ## *Usage*
+## Usage
 
->### *Install*
+>### Install
 ```html
 <script src='/modular.js'></script>
 ```
   
 #
-> ### *Config*
+> ### Config
 ```javascript
 modular.config({
   //true인 경우, 브라우저가 es6문법을 지원하지 않을 때 runtime es6 tranpile 합니다. 
@@ -62,7 +62,7 @@ modular.config({
 ```  
   
 #
-> ### *Load: Async*
+> ### Load: Async
 | imports: *Function(deps: Object, callback: Function!)* |
 | :-- |
 deps { require: [String], request: [String], requestView: [String] }
@@ -117,9 +117,9 @@ options.cache = false 일 때 해당 모듈은 로딩시 캐싱하지 않습니�
   
 
 #
-* ## *Example*
+* ## Example
 
-> ### *Load: Async*
+> ### Load: Async
 * #### Js
 ```javascript
 //hello.js  
@@ -245,15 +245,13 @@ imports({
 ```  
   
   
-* ## *support browser*  
+## support browser
 | chrome | firefox | sapari | opera | ie edge | ie 10++ |
 | :----- | :-----: | :----: | :---: | :-----: | ------: |
 
 
-***
+## history
 
-* ## *history*  
-#
 > *2019-05-31*  
 - require, request, requestView, module, exports 기능 추가  
   
